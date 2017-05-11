@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.FileUDMapper" >
+  <resultMap id="FileUDResultMap" type="com.wangzhixuan.model.FileUD" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="CREATE_NODE_MARK" property="createNodeMark" jdbcType="INTEGER" />
+    <result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="passWord" jdbcType="VARCHAR" />
+    <result column="WIDE_BAND_PROP" property="wideBandProp" jdbcType="VARCHAR" />
+    <result column="SAVE_FIELD" property="saveField" jdbcType="VARCHAR" />
+    <result column="CONSUMER_NAME" property="consumerName" jdbcType="VARCHAR" />
+    <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+    <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+    <result column="FILENAME" property="fileName" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="RESULT" property="result" jdbcType="VARCHAR" />
+    <result column="UPLOAD_TIME" property="uploadTime" jdbcType="DATE" />
+    <result column="REPEAT_COUNT" property="repeatCount" jdbcType="VARCHAR" />
+    <result column="INSERT_LINE" property="insertLine" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="FILE_Column_List" >
+    id, createNodeMark, userName, passWord, wideBandProp, saveField, consumerName,
+    address, phone, fileName, status, result, uploadTime, repeatCount, insertLine
+    
+  </sql>
+  
+  <insert id="setFileUDService" parameterType="com.wangzhixuan.model.FileUD">
+       insert into iptv_user_file_table(
+       		CREATE_NODE_MARK,USERNAME,PASSWORD,WIDE_BAND_PROP,SAVE_FIELD,CONSUMER_NAME,
+       		ADDRESS,PHONE,FILENAME,STATUS,RESULT,UPLOAD_TIME,REPEAT_COUNT,INSERT_LINE
+       	)values(
+       	    #{createNodeMark}, #{userName}, #{passWord}, #{wideBandProp}, #{saveField}, #{consumerName},
+       		#{address}, #{phone}, #{fileName}, #{status}, #{result}, #{uploadTime}, #{repeatCount}, #{insertLine}
+       	)
+  </insert>
+  
+  <select id="getFileUDCount" resultType="java.lang.Integer">
+      select count(*) from iptv_user_file_table where USERNAME = #{userName}
+  </select>
+  
+  <select id="getFileUDEntityCount" resultType="java.lang.Integer">
+      select count(*) from iptv_user_file_table where FILENAME = #{fileName} and USERNAME = #{userName} and INSERT_LINE = #{insertLine}
+  </select>
+  
+  
+  <update id="updateFileUDPwd" parameterType="com.wangzhixuan.model.FileUD">
+      update iptv_user_file_table 
+      <set>
+      	CREATE_NODE_MARK = #{createNodeMark},
+      	PASSWORD = #{passWord},
+      	WIDE_BAND_PROP = #{wideBandProp},
+      	SAVE_FIELD = #{saveField},
+      	CONSUMER_NAME = #{consumerName},
+      	ADDRESS = #{address},
+      	PHONE = #{phone},
+      	STATUS = #{status},
+      	RESULT = #{result}
+      </set>
+      where ID = #{id}
+  </update>
+  
+  <select id="getFileUDEntity" resultType="com.wangzhixuan.model.FileUD">
+      select * from iptv_user_file_table where USERNAME = #{userName}
+  </select>
+  
+    <select id="getFileUDEntityList" resultType="java.lang.String">
+      select RESULT from iptv_user_file_table where FILENAME = #{fileName}
+  </select>
+  
+  <select id="getFileUDListByFileName" resultMap="FileUDResultMap">
+      select * from iptv_user_file_table where FILENAME = #{fileName}
+  </select>
+  
+   <select id="getFileUDByFileNameAndUserName" resultMap="FileUDResultMap">
+      select * from iptv_user_file_table where FILENAME = #{fileName} and USERNAME = #{userName} and INSERT_LINE = #{insertLine}
+  </select>
+  
+   <select id="getEntityOrderByDateDesc" resultType="java.lang.String">
+     SELECT FILENAME from iptv_user_file_table ORDER BY UPLOAD_TIME DESC limit 0,1
+  </select>
+  
+  	<select id="getFileUDList" resultMap="FileUDResultMap">
+		SELECT * FROM iptv_user_file_table WHERE CREATE_NODE_MARK = #{createNodeMark} LIMIT #{pageNo},#{pageSize}
+	</select>
+	
+  	<select id="getFileUDListCount" resultType="java.lang.Integer">
+		SELECT Count(*) FROM iptv_user_file_table WHERE CREATE_NODE_MARK = #{createNodeMark}
+	</select>
+	
+  	<select id="getFileUDSearchList" resultMap="FileUDResultMap">
+  	    select * from iptv_user_file_table 
+  	    <where>
+		 	<if test="userName != null and !&quot;&quot;.equals(userName)">
+				USERNAME like CONCAT(CONCAT('%', #{userName}), '%') 
+			</if>
+	 	</where>
+	 	ORDER BY UPLOAD_TIME DESC
+	 	LIMIT #{pageNo},#{pageSize}
+  	</select>
+  	
+  	<select id="getFileUDSearchListCount" resultType="java.lang.Integer">
+  	    select count(1) from iptv_user_file_table 
+  	    <where>
+		 	<if test="userName != null and !&quot;&quot;.equals(userName)">
+				USERNAME like CONCAT(CONCAT('%', #{userName}), '%') 
+			</if>
+	 	</where>
+	 	ORDER BY UPLOAD_TIME DESC
+  	</select>
+  	
+  	  	<select id="getTwoFileUDSearchList" resultMap="FileUDResultMap">
+  	    select * from iptv_user_file_table 
+  	    <where>
+		 	<if test="userName != null and !&quot;&quot;.equals(userName)">
+				USERNAME = #{userName}
+			</if>
+	 	</where>
+	 	ORDER BY UPLOAD_TIME DESC
+	 	LIMIT #{pageNo},#{pageSize}
+  	</select>
+  	
+  	<select id="getTwoFileUDSearchListCount" resultType="java.lang.Integer">
+  	    select count(1) from iptv_user_file_table 
+  	    <where>
+		 	<if test="userName != null and !&quot;&quot;.equals(userName)">
+				USERNAME = #{userName}
+			</if>
+	 	</where>
+	 	ORDER BY UPLOAD_TIME DESC
+  	</select>
+  	
+  	
+  	<select id="getEntityByIptvAccountAndStatus" resultMap="FileUDResultMap">
+  	    select * from iptv_user_file_table where USERNAME = #{userName} and STATUS = #{status}
+  	</select>
+	
+</mapper>

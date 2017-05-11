@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- spring IOC  控制反转  自动注解              spring 给类生成实例     配置文件：     bean  class   id （对象的名字）    要给 bean的属性赋值       <property   name ref 引用 /> -->
+	
+	<!-- bean声明 -->
+	<bean id="obsTask" class="com.wangzhixuan.timeTasks.TaskTest"></bean>
+
+	<!-- 使用MethodInvokingJobDetailFactoryBean，任务类可以不实现Job接口，通过targetMethod指定调用方法 -->
+	<bean id="jobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- job-name -->
+		<property name="name" value="flytime-job" />
+		<!-- job-group -->
+		<property name="group" value="flytime-group" />
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="obsTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="taskWork" />
+		<!--是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- 任务触发器(采用cron表达式) -->
+	<bean id="cronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="jobDetail" />
+		<property name="cronExpression" value="0 0 */1 * * ?" />
+<!-- 		<property name="cronExpression" value="*/5 * * * * ?" /> -->
+
+	</bean>
+	<!-- 调度工厂 如果将lazy-init='false'那么容器启动就会执行调度程序 不写默认是false -->
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTrigger" />
+			</list>
+		</property>
+	</bean>
+</beans>

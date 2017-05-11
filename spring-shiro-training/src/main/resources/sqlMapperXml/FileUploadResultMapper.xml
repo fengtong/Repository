@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangzhixuan.mapper.FileUploadResultMapper">
+	<resultMap id="FileUploadResultMap" type="com.wangzhixuan.model.FileUploadResultEntity">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="FILENAME" property="fileName" jdbcType="VARCHAR" />
+		<result column="CITY_AREA" property="cityArea" jdbcType="VARCHAR" />
+		<result column="FILE_LIST_COUNT" property="fileListCount"
+			jdbcType="VARCHAR" />
+		<result column="REPEAT_COUNT" property="repeatCount" jdbcType="VARCHAR" />
+		<result column="FILE_REPEAT_COUNT" property="fileRepeatCount"
+			jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="RESULT" property="result" jdbcType="VARCHAR" />
+		<result column="UPLOAD_TIME" property="uploadTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="FileUploadResult_Column_List">
+		id, fileName, cityArea,
+		fileListCount,repeatCount,fileRepeatCount,status,
+		result, uploadTime
+	</sql>
+
+	<insert id="addFileUploadResult" parameterType="com.wangzhixuan.model.FileUploadResultEntity">
+		insert into
+		iptv_create_user_result(
+		FILENAME,CITY_AREA,FILE_LIST_COUNT,
+		REPEAT_COUNT,FILE_REPEAT_COUNT,STATUS,RESULT,UPLOAD_TIME
+		)values(
+		#{fileName}, #{cityArea}, #{fileListCount}, #{repeatCount},
+		#{fileRepeatCount},
+		#{status}, #{result}, #{uploadTime}
+		)
+	</insert>
+
+	<select id="getFileUploadResultCount" resultType="java.lang.Integer">
+		select count(*)
+		from iptv_create_user_result where FILENAME = #{fileName}
+	</select>
+
+	<update id="getUpdateFileUploadResult">
+		update iptv_create_user_result
+		<set>
+			STATUS = #{status},
+			RESULT = #{result}
+		</set>
+		where ID = #{id}
+	</update>
+
+	<update id="updateFileUploadResultById">
+	    update iptv_create_user_result
+		<set>
+			STATUS = #{status},
+			RESULT = #{result}
+		</set>
+		where ID = #{id}
+	</update>
+	
+	
+	<select id="getFileUploadResult" resultType="com.wangzhixuan.model.FileUploadResultEntity">
+		select * from
+		iptv_create_user_result where FILENAME = #{fileName}
+	</select>
+	
+	<select id="getFileUploadResultById" resultType="com.wangzhixuan.model.FileUploadResultEntity">
+		select * from
+		iptv_create_user_result where ID = #{id}
+	</select>
+
+	<!-- <select id="getEntityOrderByDateDesc" resultType="java.lang.String"> -->
+	<!-- SELECT FILENAME from iptv_user_file_table ORDER BY UPLOAD_TIME DESC 
+		limit 0,1 -->
+	<!-- </select> -->
+
+	<select id="getFileUploadResultList" resultMap="FileUploadResultMap">
+		SELECT * FROM iptv_create_user_result
+		<where>
+			<if test="cityArea != null and !&quot;&quot;.equals(cityArea)">
+				CITY_AREA = #{cityArea}
+			</if>
+			<if test="beginDate != null and !&quot;&quot;.equals(beginDate)">
+				<![CDATA[and UPLOAD_TIME >= #{beginDate}]]>
+			</if>
+			<if test="endDate != null and !&quot;&quot;.equals(endDate)">
+				<![CDATA[and UPLOAD_TIME < (date_add(#{endDate}, interval 1 DAY))]]>
+			</if>
+		</where>
+		ORDER BY UPLOAD_TIME DESC
+		LIMIT #{pageNo},#{pageSize}
+	</select>
+
+	<select id="getFileUploadResultListCount" resultType="java.lang.Integer">
+		SELECT Count(*) FROM iptv_create_user_result
+		<where>
+			<if test="cityArea != null and !&quot;&quot;.equals(cityArea)">
+				CITY_AREA = #{cityArea}
+			</if>
+			<if test="beginDate != null and !&quot;&quot;.equals(beginDate)">
+				<![CDATA[and UPLOAD_TIME >= #{beginDate}]]>
+			</if>
+			<if test="endDate != null and !&quot;&quot;.equals(endDate)">
+				<![CDATA[and UPLOAD_TIME < (date_add(#{endDate}, interval 1 DAY))]]>
+			</if>
+		</where>
+		ORDER BY UPLOAD_TIME DESC
+	</select>
+	
+	<select id="getFileNameByStatus" resultType="java.lang.String">
+	    select FILENAME from iptv_create_user_result where STATUS = #{status}
+	</select>
+
+</mapper>
